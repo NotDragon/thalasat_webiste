@@ -2,40 +2,31 @@
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 
-	type User = { id: string, email: string, role: string, organization: string, created_at: string };
-	let users: User[] = [];
-	let filtered: typeof users = [];
+	let organizations: { id: string; name: string; created_at: string }[] = [];
+	let filtered: typeof organizations = [];
 	let search = '';
-	let sortKey: keyof typeof users[0] | '' = '';
+	let sortKey: keyof typeof organizations[0] | '' = '';
 	let sortAsc = true;
 
-	// Modal control
+	// Modal
 	let showModal = false;
 	let id = '';
-	let organization_id = '';
-	let role = '';
+	let name = '';
 	let created_at = '';
 	let defaultId = '';
 	let defaultCreatedAt = '';
 
-	let selectedUser: User;
-	let newRole: string;
-	let showEditRoleModal = false;
-
 	onMount(async () => {
-		const res = await fetch('/api/admin/users');
-		users = await res.json();
-		filtered = users;
+		const res = await fetch('/api/admin/organizations');
+		organizations = await res.json();
+		filtered = organizations;
 
 		defaultId = uuidv4();
-		defaultCreatedAt = new Date().toISOString().slice(0, 16);
+		defaultCreatedAt = new Date().toISOString().slice(0, 16); // datetime-local format
 	});
 
-	$: filtered = users
-		.filter((u) =>
-			u.email.toLowerCase().includes(search.toLowerCase()) ||
-			u.organization.toLowerCase().includes(search.toLowerCase())
-		)
+	$: filtered = organizations
+		.filter((org) => org.name.toLowerCase().includes(search.toLowerCase()))
 		.sort((a, b) => {
 			if (!sortKey) return 0;
 			let x = a[sortKey];
@@ -47,12 +38,7 @@
 			return (x < y ? -1 : x > y ? 1 : 0) * (sortAsc ? 1 : -1);
 		});
 
-	const openEditModal = (user: User) => {
-		selectedUser = user;
-		newRole = user.role;
-		showEditRoleModal = true;
-	};
-	const toggleSort = (key: keyof typeof users[0]) => {
+	function toggleSort(key: keyof typeof organizations[0]) {
 		if (sortKey === key) sortAsc = !sortAsc;
 		else {
 			sortKey = key;
@@ -60,59 +46,41 @@
 		}
 	}
 
-	const openModal = () => {
+	function openModal() {
 		showModal = true;
 		id = '';
-		organization_id = '';
-		role = '';
+		name = '';
 		created_at = '';
 		defaultId = uuidv4();
 		defaultCreatedAt = new Date().toISOString().slice(0, 16);
 	}
 
-	const submitUser = () => {
-		if (!organization_id.trim() || !role.trim()) {
-			alert('Organization ID and Role are required.');
-			return;
-		}
+	function submitOrganization() {
+        if (!name.trim()) {
+            alert('Organization name is required.');
+            return;
+        }
 
-		const newUser = {
-			id: id || defaultId,
-			organization_id,
-			role,
-			created_at: created_at || defaultCreatedAt
-		};
+        const newOrg = {
+            id: id || defaultId,
+            name: name,
+            created_at: created_at || defaultCreatedAt
+        };
+        console.log('New organization:', newOrg);
+        showModal = false;
+    }
 
-		console.log('New user:', newUser);
-		showModal = false;
-	}
-
-	const saveRole = async () => {
-		const res = await fetch('/api/admin/users/promote', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ id: selectedUser.id, role: newRole })
-		});
-
-		if (res.ok) {
-			selectedUser.role = newRole;
-			showEditRoleModal = false;
-		} else {
-			const err = await res.text();
-			alert('Error: ' + err);
-		}
-	}
 </script>
 
 <!-- Top bar -->
 <div id="top-bar">
 	<input
 		type="text"
-		placeholder="Search users..."
+		placeholder="Search organizations..."
 		bind:value={search}
 		class="search-bar"
 	/>
-	<button class="create-user" on:click={openModal}>Register User</button>
+	<button class="create-org" on:click={openModal}>Register Organization</button>
 </div>
 
 <!-- Table -->
@@ -120,21 +88,17 @@
 	<table>
 		<thead>
 			<tr>
-				<th on:click={() => toggleSort('email')}>Email</th>
-				<th on:click={() => toggleSort('role')}>Role</th>
-				<th on:click={() => toggleSort('organization')}>Organization</th>
-				<th on:click={() => toggleSort('created_at')}>Joined</th>
-				<th></th>
+				<th on:click={() => toggleSort('id')}>UUID</th>
+				<th on:click={() => toggleSort('name')}>Name</th>
+				<th on:click={() => toggleSort('created_at')}>Created At</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each filtered as u}
 				<tr>
-					<td>{u.email}</td>
-					<td>{u.role}</td>
-					<td>{u.organization}</td>
+					<td>{u.id}</td>
+					<td>{u.name}</td>
 					<td>{new Date(u.created_at).toLocaleDateString()}</td>
-				<td><button on:click={() => openEditModal(u)}>Change Role</button></td>
 				</tr>
 			{/each}
 		</tbody>
@@ -142,37 +106,17 @@
 </div>
 
 <!-- Modal -->
-{#if showEditRoleModal}
-	<div class="modal-role">
-		<h2>Change Role</h2>
-		<select bind:value={newRole}>
-			<option value="user">User</option>
-			<option value="admin">Admin</option>
-			<option value="super_admin">Super Admin</option>
-		</select>
-		<div style="margin-top: 1rem;">
-			<button on:click={saveRole}>Save</button>
-			<button on:click={() => (showModal = false)}>Cancel</button>
-		</div>
-	</div>
-{/if}
-
-<!-- Modal -->
 {#if showModal}
 	<div class="modal-backdrop" on:click={() => (showModal = false)}></div>
 	<div class="modal" on:click|stopPropagation>
-		<h2>Register User</h2>
+		<h2>Register Organization</h2>
 		<div class="form-group">
 			<label>ID</label>
 			<input type="text" bind:value={id} placeholder={defaultId} />
 		</div>
 		<div class="form-group">
-			<label>Organization ID</label>
-			<input type="text" bind:value={organization_id} placeholder="-" />
-		</div>
-		<div class="form-group">
-			<label>Role*</label>
-			<input type="text" bind:value={role} placeholder="user / admin / super_admin" />
+			<label>Name*</label>
+			<input type="text" bind:value={name} />
 		</div>
 		<div class="form-group">
 			<label>Created At</label>
@@ -180,7 +124,7 @@
 		</div>
 		<div class="modal-actions">
 			<button on:click={() => (showModal = false)}>Cancel</button>
-			<button on:click={submitUser}>Submit</button>
+			<button on:click={submitOrganization}>Submit</button>
 		</div>
 	</div>
 {/if}
@@ -202,7 +146,7 @@
 		width: 250px;
 	}
 
-	.create-user {
+	.create-org {
 		background-color: #1481ba;
 		color: white;
 		padding: 8px 16px;
@@ -211,7 +155,7 @@
 		cursor: pointer;
 	}
 
-	.create-user:hover {
+	.create-org:hover {
 		background-color: #168ccc;
 	}
 
@@ -332,19 +276,8 @@
 	.modal-actions button:last-child:hover {
 		background-color: #1171a3;
 	}
-	label {
-		color: black;
-	}
 
-	.modal-role {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: white;
-		padding: 1.5rem;
-		box-shadow: 0 0 20px rgba(0,0,0,0.2);
-		border-radius: 8px;
-		color: black;
-	}
+    label {
+        color: black;
+    }
 </style>

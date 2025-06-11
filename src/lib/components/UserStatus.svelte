@@ -66,7 +66,7 @@
 <div class="user-container">
 	{#if $session?.user}
 		<img
-			src={$session.user.user_metadata.avatar_url ?? '/default-profile.png'}
+			src={$session.user.user_metadata?.avatar_url ?? '/default-profile.png'}
 			alt="Profile"
 			class="profile-icon"
 			on:click={toggleMenu}
@@ -152,7 +152,7 @@
 		width: 15vw;
 		padding-top: 4px;
 		color: white;
-		font-size: 0.9rem;
+		font-size: 1rem;
 	}
 
 	.user-name {

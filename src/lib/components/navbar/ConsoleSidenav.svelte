@@ -1,7 +1,7 @@
 <script>
-    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import SideMenu from './SideMenu.svelte';
-	import { faHouse, faPeopleGroup, faInfo, faNewspaper, faPaperPlane, faTv } from '@fortawesome/free-solid-svg-icons';
+    import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faHouse, faPeopleGroup, faBuilding } from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 
 	export let open = false;
@@ -21,6 +21,11 @@
 	<SideMenu bind:open bind:dark url="/{orgName}/console/users"> 
 		<h3>
 			<FontAwesomeIcon icon={ faPeopleGroup }/> Users
+		</h3>
+	</SideMenu>
+	<SideMenu bind:open bind:dark url="/{orgName}/console/organizations"> 
+		<h3>
+			<FontAwesomeIcon icon={ faBuilding }/> Organizations
 		</h3>
 	</SideMenu>
 </aside>
