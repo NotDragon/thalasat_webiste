@@ -3,13 +3,14 @@
 	import { v4 as uuidv4 } from 'uuid';
 
 	type User = { id: string, email: string, role: string, organization: string, created_at: string };
+	type Organization = { id: string, name: string };
+
 	let users: User[] = [];
 	let filtered: typeof users = [];
 	let search = '';
 	let sortKey: keyof typeof users[0] | '' = '';
 	let sortAsc = true;
 
-	// Modal control
 	let showModal = false;
 	let id = '';
 	let organization_id = '';
@@ -19,13 +20,27 @@
 	let defaultCreatedAt = '';
 
 	let selectedUser: User;
-	let newRole: string;
-	let showEditRoleModal = false;
+	let showSidePanel = false;
+	let editEmail = '';
+	let editRole = '';
+	let editOrganizationId = '';
+	let organizations: Organization[] = [];
+
+	let changeHistory: {
+		userId: string;
+		field: string;
+		oldValue: string;
+		newValue: string;
+		timestamp: string;
+	}[] = [];
 
 	onMount(async () => {
 		const res = await fetch('/api/admin/users');
 		users = await res.json();
 		filtered = users;
+
+		const orgRes = await fetch('/api/admin/organizations');
+		organizations = await orgRes.json();
 
 		defaultId = uuidv4();
 		defaultCreatedAt = new Date().toISOString().slice(0, 16);
@@ -47,18 +62,21 @@
 			return (x < y ? -1 : x > y ? 1 : 0) * (sortAsc ? 1 : -1);
 		});
 
-	const openEditModal = (user: User) => {
+	const openEditPanel = (user: User) => {
 		selectedUser = user;
-		newRole = user.role;
-		showEditRoleModal = true;
+		editEmail = user.email;
+		editRole = user.role;
+		editOrganizationId = organizations.find(org => org.name === user.organization)?.id || '';
+		showSidePanel = true;
 	};
+
 	const toggleSort = (key: keyof typeof users[0]) => {
 		if (sortKey === key) sortAsc = !sortAsc;
 		else {
 			sortKey = key;
 			sortAsc = true;
 		}
-	}
+	};
 
 	const openModal = () => {
 		showModal = true;
@@ -68,7 +86,7 @@
 		created_at = '';
 		defaultId = uuidv4();
 		defaultCreatedAt = new Date().toISOString().slice(0, 16);
-	}
+	};
 
 	const submitUser = () => {
 		if (!organization_id.trim() || !role.trim()) {
@@ -85,33 +103,50 @@
 
 		console.log('New user:', newUser);
 		showModal = false;
-	}
+	};
 
-	const saveRole = async () => {
-		const res = await fetch('/api/admin/users/promote', {
+	async function saveUserEdits() {
+		const changes = [];
+
+		if (editEmail !== selectedUser.email) {
+			changes.push({ field: 'email', oldValue: selectedUser.email, newValue: editEmail });
+		}
+		if (editRole !== selectedUser.role) {
+			changes.push({ field: 'role', oldValue: selectedUser.role, newValue: editRole });
+		}
+		const currentOrgId = organizations.find(o => o.name === selectedUser.organization)?.id || '';
+		if (editOrganizationId !== currentOrgId) {
+			changes.push({ field: 'organization_id', oldValue: currentOrgId, newValue: editOrganizationId });
+		}
+
+		for (const change of changes) {
+			changeHistory.push({
+				userId: selectedUser.id,
+				field: change.field,
+				oldValue: change.oldValue,
+				newValue: change.newValue,
+				timestamp: new Date().toISOString()
+			});
+		}
+
+		await fetch('/api/admin/users/update', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ id: selectedUser.id, role: newRole })
+			body: JSON.stringify({
+				userId: selectedUser.id,
+				email: editEmail,
+				role: editRole,
+				organizationId: editOrganizationId
+			})
 		});
 
-		if (res.ok) {
-			selectedUser.role = newRole;
-			showEditRoleModal = false;
-		} else {
-			const err = await res.text();
-			alert('Error: ' + err);
-		}
+		showSidePanel = false;
 	}
 </script>
 
 <!-- Top bar -->
 <div id="top-bar">
-	<input
-		type="text"
-		placeholder="Search users..."
-		bind:value={search}
-		class="search-bar"
-	/>
+	<input type="text" placeholder="Search users..." bind:value={search} class="search-bar" />
 	<button class="create-user" on:click={openModal}>Register User</button>
 </div>
 
@@ -120,48 +155,32 @@
 	<table>
 		<thead>
 			<tr>
+				<th>ID</th>
 				<th on:click={() => toggleSort('email')}>Email</th>
 				<th on:click={() => toggleSort('role')}>Role</th>
 				<th on:click={() => toggleSort('organization')}>Organization</th>
 				<th on:click={() => toggleSort('created_at')}>Joined</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each filtered as u}
-				<tr>
+				<tr on:click={() => openEditPanel(u)}>
+					<td>{u.id}</td>
 					<td>{u.email}</td>
 					<td>{u.role}</td>
 					<td>{u.organization}</td>
 					<td>{new Date(u.created_at).toLocaleDateString()}</td>
-				<td><button on:click={() => openEditModal(u)}>Change Role</button></td>
 				</tr>
 			{/each}
 		</tbody>
 	</table>
 </div>
 
-<!-- Modal -->
-{#if showEditRoleModal}
-	<div class="modal-role">
-		<h2>Change Role</h2>
-		<select bind:value={newRole}>
-			<option value="user">User</option>
-			<option value="admin">Admin</option>
-			<option value="super_admin">Super Admin</option>
-		</select>
-		<div style="margin-top: 1rem;">
-			<button on:click={saveRole}>Save</button>
-			<button on:click={() => (showModal = false)}>Cancel</button>
-		</div>
-	</div>
-{/if}
-
-<!-- Modal -->
+<!-- Register Modal -->
 {#if showModal}
 	<div class="modal-backdrop" on:click={() => (showModal = false)}></div>
 	<div class="modal" on:click|stopPropagation>
-		<h2>Register User</h2>
+		<h2>Register Profile</h2>
 		<div class="form-group">
 			<label>ID</label>
 			<input type="text" bind:value={id} placeholder={defaultId} />
@@ -181,6 +200,33 @@
 		<div class="modal-actions">
 			<button on:click={() => (showModal = false)}>Cancel</button>
 			<button on:click={submitUser}>Submit</button>
+		</div>
+	</div>
+{/if}
+
+<!-- Side Panel Edit -->
+{#if showSidePanel}
+	<div class="side-panel">
+		<h2>Edit User</h2>
+		<div class="form-group">
+			<label>Email</label>
+			<input type="text" bind:value={editEmail} />
+		</div>
+		<div class="form-group">
+			<label>Role</label>
+			<input type="text" bind:value={editRole} />
+		</div>
+		<div class="form-group">
+			<label>Organization</label>
+			<select bind:value={editOrganizationId}>
+				{#each organizations as org}
+					<option value={org.id}>{org.name}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="modal-actions">
+			<button on:click={() => (showSidePanel = false)}>Cancel</button>
+			<button on:click={saveUserEdits}>Save</button>
 		</div>
 	</div>
 {/if}
@@ -211,10 +257,6 @@
 		cursor: pointer;
 	}
 
-	.create-user:hover {
-		background-color: #168ccc;
-	}
-
 	#table-container {
 		display: flex;
 		justify-content: center;
@@ -234,11 +276,6 @@
 		font-family: sans-serif;
 	}
 
-	thead {
-		background-color: #f8f9fa;
-		cursor: pointer;
-	}
-
 	th, td {
 		text-align: left;
 		padding: 12px 16px;
@@ -254,8 +291,10 @@
 	}
 
 	th {
+		background-color: #f8f9fa;
 		font-weight: 600;
 		color: #343a40;
+		cursor: pointer;
 		user-select: none;
 	}
 
@@ -273,21 +312,32 @@
 		z-index: 1000;
 	}
 
+	.modal, .side-panel {
+		background: white;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	}
+
 	.modal {
 		position: fixed;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		background: white;
-		padding: 20px;
-		border-radius: 8px;
 		width: 400px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		z-index: 1001;
 	}
 
-	h2 {
-		margin-top: 0;
+	.side-panel {
+		position: fixed;
+		top: 0;
+		right: 0;
+		width: 300px;
+		height: 100%;
+		z-index: 1002;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	.form-group {
@@ -299,9 +349,10 @@
 	.form-group label {
 		font-weight: 600;
 		margin-bottom: 4px;
+		color: black;
 	}
 
-	.form-group input {
+	.form-group input, .form-group select {
 		padding: 8px;
 		border: 1px solid #ccc;
 		border-radius: 4px;
@@ -331,20 +382,5 @@
 
 	.modal-actions button:last-child:hover {
 		background-color: #1171a3;
-	}
-	label {
-		color: black;
-	}
-
-	.modal-role {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: white;
-		padding: 1.5rem;
-		box-shadow: 0 0 20px rgba(0,0,0,0.2);
-		border-radius: 8px;
-		color: black;
 	}
 </style>

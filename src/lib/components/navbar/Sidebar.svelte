@@ -2,11 +2,12 @@
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import SideMenu from './SideMenu.svelte';
 	import { faHouse, faPeopleGroup, faInfo, faNewspaper, faPaperPlane, faTv } from '@fortawesome/free-solid-svg-icons';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	export let open = false;
 	
-  	$: dark = $page.url.pathname == '/monitor';
+  	$: dark = page.url.pathname.includes('/monitor');
+	$: org = page.data.organizationName ?? 'default';
 </script>
 
 <aside class={dark? "dark": "light"} class:open>
@@ -40,7 +41,7 @@
 		</h3>
 	</SideMenu>
 	
-	<SideMenu bind:open bind:dark url="/monitor"> 
+	<SideMenu bind:open bind:dark url={`/${org}/monitor`}> 
 		<h3>
 			<FontAwesomeIcon icon={ faTv }/> Monitor
 		</h3>

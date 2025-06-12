@@ -261,10 +261,6 @@
 		padding-left: 1rem;
 	}
 
-	p {
-		font-size: 1.1rem;
-	}
-
 	select {
 		background-color: #001021;
 		color: white;

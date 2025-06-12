@@ -14,7 +14,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	const session: any = writable(null);
-	const userProfile = writable<any>(null); // optionally replace `any` with a proper type
+	const userProfile = writable<any>(null);
 
 	let showMenu = false;
 
@@ -61,6 +61,7 @@
 	function toggleMenu() {
 		showMenu = !showMenu;
 	}
+	
 </script>
 
 <div class="user-container">
