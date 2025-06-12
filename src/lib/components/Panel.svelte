@@ -1,10 +1,10 @@
 <script lang="ts">
     export let background: string;
     export let width: string = '';
-    export let style: string = "";
+    export let extraStyle: string = "";
 </script>
 
-<div style="background: {background}; {width? `width: ${width};`: ''} {style}">
+<div style="background: {background}; {width? `width: ${width};`: ''} {extraStyle}">
     <slot/>
 </div>
 

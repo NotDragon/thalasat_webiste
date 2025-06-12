@@ -18,7 +18,7 @@ import Carousel from "$lib/components/Carousel.svelte";
             <button style="background-color: {color_palette_light.primary}; color: {color_palette_light.background}" onclick={() => {goto("/about#algal_blooms")}}>Learn More</button>
         </Panel>
 
-        <Panel background={color_palette_light.background} width="50vw" style="margin-left: 2vw">
+        <Panel background={color_palette_light.background} width="50vw" extraStyle="margin-left: 2vw">
             <h2>Our Solution</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis euismod eros. Sed venenatis non nisi feugiat ullamcorper. Vestibulum lorem ex, efficitur vitae dui et, venenatis tempor enim. Nulla nec leo in massa lobortis tristique. Curabitur nec odio non ipsum eleifend egestas. Etiam placerat congue consectetur. Nulla non nisi vel enim tincidunt ultrices a in turpis. Nulla fermentum est eget risus condimentum, a dignissim tortor convallis. Morbi elementum augue quis est malesuada rutrum. Nulla semper lectus a erat maximus, eu faucibus purus molestie. Praesent varius commodo neque, non pharetra libero blandit ac.</p>
             <button style="background-color: {color_palette_light.primary}; color: {color_palette_light.background}" onclick={() => {goto("/about")}}>Learn More</button>

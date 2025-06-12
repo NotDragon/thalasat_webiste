@@ -1,12 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { supabase } from '$lib/supabaseClient';
 import { supabaseAdmin } from '$lib/supabaseAdmin';
 
 export async function GET({ locals }) {
 	const userId = locals.user?.id;
 
 	// Check role
-	const { data: adminProfile } = await supabase
+       const { data: adminProfile } = await locals.supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', userId)
@@ -17,7 +16,7 @@ export async function GET({ locals }) {
 	}
 
 	// Get profiles + organization name
-	const { data: profiles, error: profilesError } = await supabase
+       const { data: profiles, error: profilesError } = await locals.supabase
 		.from('profiles')
 		.select('id, role, organization_id, created_at, organizations(name)');
 

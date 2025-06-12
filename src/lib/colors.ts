@@ -11,7 +11,7 @@ export const color_palette_light = {
 	secondaryBackground: '#e4e4e4',
 	surface: '#ffffff',
 	border: '#dddddd',
-	text: '#ffffff',
+        text: '#000000',
 	muted: '#999999',
 
 	// Status
