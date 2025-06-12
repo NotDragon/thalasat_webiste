@@ -1,7 +1,7 @@
-<script>
-    export let background;
-    export let width = '';
-    export let style = "";
+<script lang="ts">
+    export let background: string;
+    export let width: string = '';
+    export let style: string = "";
 </script>
 
 <div style="background: {background}; {width? `width: ${width};`: ''} {style}">
