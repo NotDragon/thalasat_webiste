@@ -36,6 +36,7 @@
 
 		supabase.auth.onAuthStateChange((_event, newSession) => {
 			session.set(newSession);
+			console.log($session?.user.user_metadata?.avatar_url)
 		});
 	});
 
@@ -61,7 +62,6 @@
 	function toggleMenu() {
 		showMenu = !showMenu;
 	}
-	
 </script>
 
 <div class="user-container">
