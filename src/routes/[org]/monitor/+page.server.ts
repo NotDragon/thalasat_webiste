@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { supabase } from '$lib/supabaseClient';
+
 
 export async function load({ locals }) {
 	const user = locals.user;
@@ -7,7 +7,7 @@ export async function load({ locals }) {
 		throw redirect(303, '/login');
 	}
 
-	const { data: profile, error } = await supabase
+       const { data: profile, error } = await locals.supabase
 		.from('profiles')
 		.select('*')
 		.eq('id', user.id)

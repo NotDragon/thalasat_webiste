@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { supabase } from '$lib/supabaseClient';
 
-export async function POST({ request }) {
+export async function POST({ request, locals }) {
 	const body = await request.json();
 	const { userId, organizationId, role } = body;
 
@@ -9,8 +8,8 @@ export async function POST({ request }) {
 	if (organizationId !== undefined) updates.organization_id = organizationId;
 	if (role !== undefined) updates.role = role;
 
-	const { error } = await supabase
-		.from('profiles')
+       const { error } = await locals.supabase
+               .from('profiles')
 		.update(updates)
 		.eq('id', userId);
 

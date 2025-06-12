@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/state';
   	$: monitor = page.url.pathname == '/monitor';
 
-	export let open = false;
+        export let open: boolean = false;
 </script>
 
 <div class:open>

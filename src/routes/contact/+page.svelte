@@ -1,9 +1,9 @@
-<script>
-    let name = '';
-    let email = '';
-    let message = '';
-    let sent = false;
-    function handleSubmit(e) {
+<script lang="ts">
+    let name: string = '';
+    let email: string = '';
+    let message: string = '';
+    let sent: boolean = false;
+    function handleSubmit(e: Event) {
         e.preventDefault();
         sent = true;
     }

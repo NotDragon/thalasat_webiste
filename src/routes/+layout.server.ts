@@ -9,7 +9,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		.eq('id', locals.user.id)
 		.single();
 
-	const organizationName = profile?.organization?.name ?? null;
+        const organizationName = (profile as any)?.organization?.name ?? null;
 
 	return {
 		user: locals.user,

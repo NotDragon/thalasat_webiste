@@ -8,8 +8,8 @@
 
 <nav class={dark? "dark": "light"}>
 	<br />
-	<a
-		href="{url}"
+       <a
+               href={url}
 		on:click={() => {
 			open = false;
 		}}> <div style="{page.url.pathname === url? `background: ${dark? color_palette_light.primary: color_palette_light.background}; color: ${dark? color_palette_light.background: color_palette_light.primaryDark}; padding: 1vh; border-radius: 1vh;`: ""}"><slot/></div></a>
