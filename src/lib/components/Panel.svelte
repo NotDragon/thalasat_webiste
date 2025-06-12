@@ -1,10 +1,10 @@
 <script>
     export let background;
     export let width = '';
-    export let style = "";
+    export let extraStyle = "";
 </script>
 
-<div style="background: {background}; {width? `width: ${width};`: ''} {style}">
+<div style="background: {background}; {width? `width: ${width};`: ''} {extraStyle}">
     <slot/>
 </div>
 
