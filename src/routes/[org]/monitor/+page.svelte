@@ -130,12 +130,12 @@
 	<h2>Map Settings</h2>
 	<hr style="margin: 1rem 0; border: none; border-bottom: 1px solid #ccc; width: 18vw" />
 	
-	<lable>Map Mode:</lable>
+        <label>Map Mode:</label>
 	<select bind:value={mapMode}>	
 		<option value="sst">Sea Surface Temperature</option>
 		<option value="chl">Chlorophyll-A Concentration</option>
 		<option value="green">Chlorophyll from Greenalgae Concentration</option>
-		<option value="so">Solinity at Sea Surface</option>
+                <option value="so">Salinity at Sea Surface</option>
 	</select>
 </div>
 

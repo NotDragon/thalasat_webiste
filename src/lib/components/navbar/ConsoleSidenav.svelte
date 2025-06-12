@@ -18,12 +18,12 @@
 		</h3>
 	</SideMenu>
     <hr>
-	<SideMenu bind:open bind:dark url="/{orgName}/console/users"> 
+       <SideMenu bind:open bind:dark url={`/${orgName}/console/users`}>
 		<h3>
 			<FontAwesomeIcon icon={ faPeopleGroup }/> Users
 		</h3>
 	</SideMenu>
-	<SideMenu bind:open bind:dark url="/{orgName}/console/organizations"> 
+       <SideMenu bind:open bind:dark url={`/${orgName}/console/organizations`}>
 		<h3>
 			<FontAwesomeIcon icon={ faBuilding }/> Organizations
 		</h3>

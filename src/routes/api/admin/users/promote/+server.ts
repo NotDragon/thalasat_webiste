@@ -1,12 +1,11 @@
 import { json } from '@sveltejs/kit';
 import { supabaseAdmin } from '$lib/supabaseAdmin';
-import { supabase } from '$lib/supabaseClient';
 
 export async function POST({ request, locals }) {
 	const superAdminId = locals.user?.id;
 
 	// Check if the caller is a super_admin
-	const { data: adminProfile } = await supabase
+       const { data: adminProfile } = await locals.supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', superAdminId)
