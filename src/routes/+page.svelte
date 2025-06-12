@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import { color_palette_light } from "$lib/colors";
-    import Panel from "$lib/components/Panel.svelte";
-    import { goto } from '$app/navigation';
-    import Carousel from "$lib/components/Carousel.svelte";
+import Panel from "$lib/components/Panel.svelte";
+import { goto } from '$app/navigation';
+import Carousel from "$lib/components/Carousel.svelte";
 
 </script>
 

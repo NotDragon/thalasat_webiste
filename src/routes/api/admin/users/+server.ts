@@ -36,16 +36,19 @@ export async function GET({ locals }) {
 	}));
 
 	// Merge
-	const merged = profiles.map((p) => {
-		const u = users.find((user) => user.id === p.id);
-		return {
-			id: p.id,
-			role: p.role,
-			email: u?.email || '(unknown)',
-			created_at: p.created_at,
-			organization: p.organizations?.name || '-' // ✅ correct property name
-		};
-	});
+        const merged = profiles.map((p) => {
+                const u = users.find((user) => user.id === p.id);
+                const org = Array.isArray(p.organizations)
+                        ? p.organizations[0]?.name
+                        : (p.organizations as any)?.name;
+                return {
+                        id: p.id,
+                        role: p.role,
+                        email: u?.email || '(unknown)',
+                        created_at: p.created_at,
+                        organization: org || '-'
+                };
+        });
 
 	return json(merged);
 }

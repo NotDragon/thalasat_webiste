@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Hamburger from '$lib/components/navbar/Hamburger.svelte';
 	import ConsoleSidenav from '$lib/components/navbar/ConsoleSidenav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -17,7 +17,7 @@
 			}
 		});
 	});
-    let open = false;
+    let open: boolean = false;
 	
 </script>
 

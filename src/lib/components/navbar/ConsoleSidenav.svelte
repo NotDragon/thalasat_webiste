@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
 	import SideMenu from './SideMenu.svelte';
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faHouse, faPeopleGroup, faBuilding } from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 
-	export let open = false;
+        export let open: boolean = false;
 
-    export let orgName;
+    export let orgName: string;
 	
   	$: dark = $page.url.pathname == '/monitor';
 </script>

@@ -1,6 +1,13 @@
-<script>
+<script lang="ts">
     // Fake team data
-    const team = [
+    type Member = {
+        name: string;
+        role: string;
+        img: string;
+        bio: string;
+        work: string;
+    };
+    const team: Member[] = [
         {
             name: "Stefanos Siathas",
             role: "Founder & CEO",
@@ -45,8 +52,8 @@
         muted: "#999999"
     };
 
-    let selected = null;
-    function openModal(member) {
+    let selected: Member | null = null;
+    function openModal(member: Member) {
         selected = member;
     }
     function closeModal() {
@@ -89,16 +96,16 @@
             <div class="modal-content large" on:click|stopPropagation>
                 <button class="modal-close" on:click={closeModal}>&times;</button>
                 <div class="modal-header">
-                    <img class="modal-img" src={selected.img} alt={selected.name} />
+                    <img class="modal-img" src={selected!.img} alt={selected!.name} />
                     <div>
-                        <div class="modal-name">{selected.name}</div>
-                        <div class="modal-role">{selected.role}</div>
+                        <div class="modal-name">{selected!.name}</div>
+                        <div class="modal-role">{selected!.role}</div>
                     </div>
                 </div>
-                <div class="modal-bio">{selected.bio}</div>
+                <div class="modal-bio">{selected!.bio}</div>
                 <div class="modal-section">
                     <div class="modal-section-title">What I do</div>
-                    <div class="modal-section-content">{selected.work}</div>
+                    <div class="modal-section-content">{selected!.work}</div>
                 </div>
                 <div class="modal-section">
                     <div class="modal-section-title">About</div>

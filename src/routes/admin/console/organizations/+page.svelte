@@ -29,8 +29,8 @@
 		.filter((org) => org.name.toLowerCase().includes(search.toLowerCase()))
 		.sort((a, b) => {
 			if (!sortKey) return 0;
-			let x = a[sortKey];
-			let y = b[sortKey];
+                        let x: any = a[sortKey];
+                        let y: any = b[sortKey];
 			if (sortKey === 'created_at') {
 				x = new Date(x);
 				y = new Date(y);

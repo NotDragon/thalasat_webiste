@@ -1,5 +1,13 @@
-<script>
-    const posts = [
+<script lang="ts">
+    interface Post {
+        title: string;
+        date: string;
+        author: string;
+        summary: string;
+        content: string;
+        images?: string[];
+    }
+    const posts: Post[] = [
         {
             title: "Welcome to the Thalasat Blog!",
             date: "2025-05-26",
@@ -22,23 +30,23 @@
             content: `Alexandros brings creativity and empathy to our product design. In this post, he shares his approach to building intuitive tools for marine research.`
         }
     ];
-    let selected = null;
-    function openModal(post) { selected = post; carouselIndex = 0; }
+    let selected: Post | null = null;
+    function openModal(post: Post) { selected = post; carouselIndex = 0; }
     function closeModal() { selected = null; }
-    let carouselIndex = 0;
-    const defaultImages = [
+    let carouselIndex: number = 0;
+    const defaultImages: string[] = [
         'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
         'https://images.unsplash.com/photo-1465101046530-73398c7f28ca',
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
     ];
-    function prevImage(images) {
+    function prevImage(images: string[]) {
         carouselIndex = (carouselIndex - 1 + images.length) % images.length;
     }
-    function nextImage(images) {
+    function nextImage(images: string[]) {
         carouselIndex = (carouselIndex + 1) % images.length;
     }
-    let imageOverlay = null;
-    function openImageOverlay(img) {
+    let imageOverlay: string | null = null;
+    function openImageOverlay(img: string) {
         imageOverlay = img;
     }
     function closeImageOverlay() {
@@ -101,8 +109,8 @@
                                 />
                             {/each}
                         </div>
-                        <button class="carousel-btn left" on:click={() => prevImage(selected.images || defaultImages)}>&lt;</button>
-                        <button class="carousel-btn right" on:click={() => nextImage(selected.images || defaultImages)}>&gt;</button>
+                        <button class="carousel-btn left" on:click={() => prevImage((selected!.images) || defaultImages)}>&lt;</button>
+                        <button class="carousel-btn right" on:click={() => nextImage((selected!.images) || defaultImages)}>&gt;</button>
                     </div>
                 </div>
             </div>

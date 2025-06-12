@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { color_palette_light } from "$lib/colors";
 </script>
 <div id="header" style="color: {color_palette_light.background}">
